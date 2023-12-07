@@ -13,7 +13,7 @@ const Shop = () => {
     },[])
 
     const hendelClick=(product)=>{
-        console.log(product);
+        
         const newCard=[...card,product];
         setCard(newCard);
     }
