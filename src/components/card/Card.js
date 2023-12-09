@@ -4,7 +4,7 @@ import { faColonSign } from '@fortawesome/free-solid-svg-icons';
 
 const Card = (props) => {
     const {card}=props;
-    console.log(props);
+    // console.log(props);
   let total=0;
   let shipping=0;
   
