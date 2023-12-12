@@ -8,26 +8,54 @@ const Shop = () => {
     const[products,setProducts]=useState([]);
     const [card,setCard]=useState([])
     useEffect(()=>{
+        // console.log('product load before fetch');
         fetch('https://raw.githubusercontent.com/ProgrammingHero1/ema-john-resources/main/fakeData/products.json')
         .then(res=>res.json())
-        .then(data=>setProducts(data))
+        .then(data=>{
+            
+            setProducts(data)
+            console.log("product loaded");
+        })
     },[])
     useEffect(()=>{
+        
+        // console.log('localStorage frist line',products);
         const strodCart=getStoredCart();
+        const savedCart=[];
         for (const id in strodCart){
             const addedProduct=products.find(product=>product.id===id);
+            if(addedProduct){
+                const quantity = strodCart[id];
+                addedProduct.quantity=quantity;
+              savedCart.push(addedProduct);
+            }
 
-            console.log(addedProduct);
+            
+            
+        }
+       setCard(savedCart);
+        // console.log('local storage finesed');
+
+    },[products])
+
+    const hendelClick=(selectedProduct)=>{
+        console.log(selectedProduct);
+        let newCart =[];
+        const exists= card.find(product=>product.id===selectedProduct.id);
+        if(!exists){
+           selectedProduct.quantity=1;
+           newCart=[...card,selectedProduct];
+        }
+        else{
+            const rest =card.filter(product=>product.id !==selectedProduct.id);
+            exists.quantity=exists.quantity+1;
+            newCart =[...rest,exists];
+
         }
         
-
-    },[])
-
-    const hendelClick=(product)=>{
-        
-        const newCard=[...card,product];
-        setCard(newCard);
-        addToDb(product.id)
+       
+        setCard(newCart);
+        addToDb(selectedProduct.id)
     }
     return (
         <div className='shop-container '>
