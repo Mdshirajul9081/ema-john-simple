@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import './Shop.css'
 import Product from '../product/Products';
-import Card from '../card/Card';
-import { addToDb, getStoredCart } from '../../utilities/fakedb';
+import Cart from '../Cart/Cart';
+import { addToDb, deleteShoppingCart, getStoredCart } from '../../utilities/fakedb';
+import { Link, useLoaderData } from 'react-router-dom';
 
 const Shop = () => {
-    const[products,setProducts]=useState([]);
-    const [card,setCard]=useState([])
-    useEffect(()=>{
-        // console.log('product load before fetch');
-        fetch('https://raw.githubusercontent.com/ProgrammingHero1/ema-john-resources/main/fakeData/products.json')
-        .then(res=>res.json())
-        .then(data=>{
-            
-            setProducts(data)
-            console.log("product loaded");
-        })
-    },[])
+    const products=useLoaderData();
+    const [cart,setCart]=useState([])
+    const clearCart=()=>{
+        setCart([]);
+        deleteShoppingCart();
+    }
+    
     useEffect(()=>{
         
         // console.log('localStorage frist line',products);
@@ -33,7 +29,7 @@ const Shop = () => {
             
             
         }
-       setCard(savedCart);
+       setCart(savedCart);
         // console.log('local storage finesed');
 
     },[products])
@@ -41,20 +37,20 @@ const Shop = () => {
     const hendelClick=(selectedProduct)=>{
         console.log(selectedProduct);
         let newCart =[];
-        const exists= card.find(product=>product.id===selectedProduct.id);
+        const exists= cart.find(product=>product.id===selectedProduct.id);
         if(!exists){
            selectedProduct.quantity=1;
-           newCart=[...card,selectedProduct];
+           newCart=[...cart,selectedProduct];
         }
         else{
-            const rest =card.filter(product=>product.id !==selectedProduct.id);
+            const rest =cart.filter(product=>product.id !==selectedProduct.id);
             exists.quantity=exists.quantity+1;
             newCart =[...rest,exists];
 
         }
         
        
-        setCard(newCart);
+        setCart(newCart);
         addToDb(selectedProduct.id)
     }
     return (
@@ -69,7 +65,9 @@ const Shop = () => {
            }
            </div>
            <div className="cards-container">
-           <Card card={card}></Card>
+           <Cart clearCart={clearCart} cart={cart}>
+            <Link to='/orders'><button>order review</button></Link>
+           </Cart>
            </div>
         </div>
     );
